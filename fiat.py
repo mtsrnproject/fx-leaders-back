@@ -1,21 +1,22 @@
 from coinmarketcapapi import CoinMarketCapAPI
 import pandas as pa
-from requests import Request, Session
+# from requests import Request, Session
+import requests
 from requests.exceptions import ConnectionError, Timeout, TooManyRedirects
 import json
 import time
 
 
 
-class getData():
+class getFiatData():
 
     def __init__(self , type):
         self.type = type
 
-    url = 'https://pro-api.coinmarketcap.com/v1/cryptocurrency/listings/latest'
+    url = "https://api.fastforex.io/fetch-all?api_key=ad56a856a7-70cd72b506-sffdfc"
     headers = {
-    'Accepts': 'application/json',
-    'X-CMC_PRO_API_KEY': 'e0f2c46f-e46c-4f73-ab5d-a8fd983704ca',
+    "Accepts": "application/json",
+    # 'X-CMC_PRO_API_KEY': 'e0f2c46f-e46c-4f73-ab5d-a8fd983704ca',
     }
 
 
@@ -24,34 +25,35 @@ class getData():
 
         
         # print(cleanData)
-        price = []
+        # price = []
         name = []
-        percent_24 = []
-        percent_1=[]
+        sign = []
+        symbol=[]
         for i in data:
-            name.append(i['symbol'])
-            price.append(i['quote']['USD']['price'])
-            percent_24.append(i['quote']['USD']['percent_change_24h'])
-            percent_1.append(i['quote']['USD']['percent_change_1h'])
+            name.append(i['name'])
+            sign.append(i['sign'])
+            symbol.append(i['symbol'])
+            # percent_1.append(i['quote']['USD']['percent_change_1h'])
             # time.sleep(1)
             # print(name , price)
         
         new=pa.DataFrame({ 'name' : name , 
-                          'price' : price,
-                           'prcent_change_1H' : percent_1,
-                            'percent_change_24H' : percent_24 })
-        new.to_csv('data.csv' , index=True)
+                          'sign' : sign,
+                           'symbol' : symbol,
+                             })
+        new.to_csv('fiat.csv' , index=False)
 
 
     def geter(self):
-        session = Session()
-        session.headers.update(self.headers)
+        # session = Session()
+        # session.headers.update(self.headers)
 
         try:
-            response = session.get(self.url)
-            data = json.loads(response.text)
-            print(data['data'])
-            self.analyze(data['data'])
+            # response = session.get(self.url )
+            response = requests.get(self.url, headers=self.headers)
+            # data = json.loads(response.text)
+            print(response.text)
+            # self.analyze(data['data'])
             # names2 = []
             # for i in data['data']:
                 # print(i)
